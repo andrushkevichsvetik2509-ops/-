@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Генератор номеров</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#09070f;color:#fff;font-family:Arial,sans-serif;min-height:100vh}
+.app{max-width:430px;margin:auto;padding:18px 14px 30px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+.logo{font-size:20px;font-weight:800}.level{font-size:12px;color:#b8a9d8}
+.balance{background:#171020;border:1px solid #33244a;border-radius:14px;padding:11px 14px;text-align:center;margin-bottom:18px}
+.balance small{display:block;color:#9e91b5;font-size:11px}.money{font-size:22px;font-weight:800;margin-top:3px}
+.card{background:linear-gradient(145deg,#171021,#0e0b15);border:1px solid #39274f;border-radius:22px;padding:20px;box-shadow:0 15px 45px #0008;margin-bottom:16px}
+.label{font-size:12px;color:#988ba9;text-transform:uppercase;letter-spacing:1px}
+.plate{margin:18px 0;background:#eee;color:#111;border-radius:9px;padding:14px 8px;text-align:center;font-size:38px;font-weight:900;letter-spacing:2px;border:3px solid #111;box-shadow:0 7px 20px #0008}
+.region{font-size:15px;font-weight:700;margin-left:4px}
+.rarity{display:inline-block;padding:7px 12px;border-radius:10px;background:#241735;color:#d6b6ff;font-weight:800;font-size:13px}
+.price{font-size:29px;font-weight:900;margin-top:10px}
+.xp{height:7px;background:#21182c;border-radius:20px;overflow:hidden;margin-top:8px}.xp i{display:block;width:42%;height:100%;background:#a96cff}
+button{width:100%;border:0;border-radius:15px;padding:16px;background:linear-gradient(135deg,#a84cff,#6d2bd8);color:#fff;font-size:16px;font-weight:900;box-shadow:0 8px 25px #7b35d655}
+button:active{transform:scale(.98)}.secondary{margin-top:10px;background:#18111f;border:1px solid #382647;color:#cdb9e5;box-shadow:none}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:#120d19;border:1px solid #292035;border-radius:15px;padding:14px}.stat b{font-size:18px}.stat small{display:block;color:#8d819b;margin-top:4px}
+.history{margin-top:16px}.history h3{margin:0 0 10px}.item{display:flex;justify-content:space-between;background:#120d19;border:1px solid #292035;padding:12px;border-radius:12px;margin-top:7px}.item span{color:#aaa0b4}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="top"><div class="logo">ГЕНЕРАТОР НОМЕРОВ</div><div class="level">УР. <b id="level">5</b></div></div>
+  <div class="balance"><small>БАЛАНС</small><div class="money" id="balance">847 849 ₽</div></div>
+
+  <div class="card">
+    <div class="label">Ваш номер</div>
+    <div class="plate" id="plate">М137МО <span class="region">90</span></div>
+    <div class="rarity" id="rarity">ЭПИЧЕСКИЙ</div>
+    <div class="price" id="price">847 849 ₽</div>
+    <div class="label" style="margin-top:12px">Опыт</div>
+    <div class="xp"><i id="xp"></i></div>
+  </div>
+
+  <button onclick="generate()">СГЕНЕРИРОВАТЬ НОМЕР</button>
+  <button class="secondary" onclick="alert('Коллекция будет подключена к базе данных следующим этапом.')">МОЯ КОЛЛЕКЦИЯ</button>
+
+  <div class="stats">
+    <div class="stat"><b id="found">1</b><small>Номеров найдено</small></div>
+    <div class="stat"><b id="best">847 849 ₽</b><small>Лучший номер</small></div>
+  </div>
+
+  <div class="history"><h3>Последние номера</h3><div id="history"></div></div>
+</div>
+<script>
+const letters="АВЕКМНОРСТУХ";
+const regions=["77","90","97","99","116","116","150","177","190","197","777"];
+let balance=847849, found=1, best=847849, xp=42;
+const fmt=n=>n.toLocaleString('ru-RU')+" ₽";
+function generate(){
+ let a=letters[Math.floor(Math.random()*letters.length)];
+ let b=letters[Math.floor(Math.random()*letters.length)];
+ let c=letters[Math.floor(Math.random()*letters.length)];
+ let n=Math.floor(Math.random()*900)+100;
+ let r=regions[Math.floor(Math.random()*regions.length)];
+ let score=(a==b?250000:0)+(b==c?250000:0)+(a==c?150000:0);
+ if(n%111==0)score+=500000;
+ let price=5000+Math.floor(Math.random()*60000)+score;
+ let rarity=score>=500000?"ЛЕГЕНДАРНЫЙ":score>=250000?"ЭПИЧЕСКИЙ":score>=100000?"РЕДКИЙ":"ОБЫЧНЫЙ";
+ balance+=Math.floor(price*.12); found++; xp=Math.min(100,xp+7); if(price>best)best=price;
+ document.getElementById("plate").innerHTML=`${a}${n}${b}${c} <span class="region">${r}</span>`;
+ document.getElementById("rarity").textContent=rarity;
+ document.getElementById("price").textContent=fmt(price);
+ document.getElementById("balance").textContent=fmt(balance);
+ document.getElementById("found").textContent=found;
+ document.getElementById("best").textContent=fmt(best);
+ document.getElementById("xp").style.width=xp+"%";
+ document.getElementById("history").insertAdjacentHTML("afterbegin",`<div class="item"><b>${a}${n}${b}${c} ${r}</b><span>${rarity}</span></div>`);
+}
+</script>
+</body>
+</html>
